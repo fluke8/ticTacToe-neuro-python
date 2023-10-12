@@ -40,7 +40,8 @@ class ticTacToe():
         
         state_for_robots = scaler.transform(self.state)
 
-        return state_for_robots.flatten()
+        # return state_for_robots.flatten()
+        return np.array(self.state).flatten()
 
     def step1(self, action):   
         done = False
@@ -66,7 +67,8 @@ class ticTacToe():
 
 
         
-        return state_for_robots.flatten(), reward, done
+        # return state_for_robots.flatten(), reward, done
+        return np.array(self.state).flatten(), reward, done
     
     def step2(self, action):   
         done = False
@@ -92,7 +94,9 @@ class ticTacToe():
 
         state_for_robots = scaler.transform(self.state)
         
-        return state_for_robots.flatten(), reward, done
+        # return state_for_robots.flatten(), reward, done
+        return np.array(self.state).flatten(), reward, done
+
 
     def render(self):
         for i in range(len(self.state)):
@@ -225,8 +229,8 @@ def train(net1, optimizer1, net2, optimizer2, episodes, hidden_size1):
         
         print(episode_rewards_net1,episode_rewards_net2)
         if episode%500000 == 0:
-            torch.save(net1, f'net/tictactoe/tictactoe_net1_{hidden_size1}_{episode}.pth')
-            torch.save(net2, f'net/tictactoe/tictactoe_net2_{hidden_size1}_{episode}.pth')
+            torch.save(net1, f'nets/tictactoe_net1_{hidden_size1}_{episode}.pth')
+            torch.save(net2, f'nets/tictactoe_net2_{hidden_size1}_{episode}.pth')
         optimize(net1, optimizer1, episode_states_net1, episode_actions_net1, episode_rewards_net1)
 
         optimize(net2, optimizer2, episode_states_net2, episode_actions_net2, episode_rewards_net2)
