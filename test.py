@@ -248,11 +248,83 @@ def train(net1, optimizer1, net2, optimizer2, episodes, hidden_size1, hidden_siz
 
         optimize(net2, optimizer2, episode_states_net2, episode_actions_net2, episode_rewards_net2)
 
+def test1(net, num_episodes=10):
+        for episode in range(num_episodes):
+            print('RESTARTING')
+            state = env.reset()
+            step = 0
+            while True:
+                env.render()
+
+                if step%2 == 0:
+                    action = int(input())
+                    next_state, reward, done = env.step1(action)
+                    if reward < 0:
+                        print('Ты ошибся')
+                    elif reward > 0:
+                        print('Ты выиграл')
+                else:
+                    action = select_action(net, state)
+                    next_state, reward, done = env.step2(action)
+                    if reward < 0:
+                        print('Робот ошибся')
+                    elif reward > 0:
+                        print('Робот выиграл')
+                    
+                step += 1
+
+                if done:
+                    break
+
+                state = next_state
+
+def test2(net, num_episodes=10):
+    for episode in range(num_episodes):
+        print('RESTARTING')
+        state = env.reset()
+        step = 0
+        while True:
+
+            env.render()
+
+            if step%2 == 0:
+                action = select_action(net, state)
+                next_state, reward, done = env.step1(action)
+                if reward < 0:
+                    print('Робот ошибся')
+                elif reward > 0:
+                    print('Робот выиграл')
+            else:
+
+                action = int(input())
+                while True:
+                    if action == 0 or action == 1 or action == 2 or action == 3 or action == 4 or action == 5 or action == 6 or action == 7 or action == 8:
+                        next_state, reward, done = env.step2(action)
+                        break
+                    else:
+                        print('неправильное действие')
+                        action = int(input())
+
+                if reward < 0:
+                    print('Ты ошибся')
+                elif reward > 0:
+                    print('Ты выиграл')
+            step += 1
+
+            if done:
+                break
+
+            state = next_state
+
 
 env = ticTacToe()
 
 
 
 
-net1 = torch.load('nets/1tictactoe_net1_27_18_0_5770000.pth')
-net2 = torch.load('nets/1tictactoe_net2_27_18_0_5770000.pth')
+net1 = torch.load('nets/1tictactoe_net1_64_0_0_0.01_0.pth')
+net2 = torch.load('nets/1tictactoe_net2_64_0_0_0.01_0.pth')
+
+
+
+test1(net2)
