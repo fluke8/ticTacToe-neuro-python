@@ -322,9 +322,9 @@ env = ticTacToe()
 
 
 
-net1 = torch.load('nets/2tictactoe_net1_64_0_0_0.01_300000.pth')
-net2 = torch.load('nets/2tictactoe_net2_64_0_0_0.01_300000.pth')
+net1 = torch.load('nets/2tictactoe_net1_64_0_0_0.01_5700000.pth')
+net2 = torch.load('nets/2tictactoe_net2_64_0_0_0.01_5700000.pth')
 
 
 
-test2(net1)
+test1(net2)
