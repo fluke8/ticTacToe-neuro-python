@@ -257,7 +257,7 @@ def test1(net, num_episodes=10):
                 env.render()
 
                 if step%2 == 0:
-                    action = int(input())
+                    action = int(input())-1
                     next_state, reward, done = env.step1(action)
                     if reward < 0:
                         print('Ты ошибся')
@@ -296,7 +296,7 @@ def test2(net, num_episodes=10):
                     print('Робот выиграл')
             else:
 
-                action = int(input())
+                action = int(input())-1
                 while True:
                     if action == 0 or action == 1 or action == 2 or action == 3 or action == 4 or action == 5 or action == 6 or action == 7 or action == 8:
                         next_state, reward, done = env.step2(action)
@@ -322,8 +322,8 @@ env = ticTacToe()
 
 
 
-net1 = torch.load('nets/2tictactoe_net1_64_0_0_0.01_5700000.pth')
-net2 = torch.load('nets/2tictactoe_net2_64_0_0_0.01_5700000.pth')
+net1 = torch.load('nets/3tictactoe_net1_64_0_0_1e-07_1800000.pth')
+net2 = torch.load('nets/3tictactoe_net2_64_0_0_1e-07_1800000.pth')
 
 
 
