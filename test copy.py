@@ -24,6 +24,51 @@ def check_winner(board, player):
 
     return False
 
+def minimax(board, depth, is_maximizing):
+    if check_winner(board, -1):
+        return -1
+    elif check_winner(board, 1):
+        return 1
+    elif not(np.isin(0, np.array(board))):
+        return 0
+        
+    
+    if is_maximizing:
+        max_eval = float('-inf')
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == 0:
+                    board[i][j] = 1
+                    eval = minimax(board, depth + 1, False)
+                    board[i][j] = 0
+                    max_eval = max(max_eval, eval)
+        return max_eval
+    else:
+        min_eval = float('inf')
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == 0:
+                    board[i][j] = -1
+                    eval = minimax(board, depth + 1, True)
+                    board[i][j] = 0
+                    min_eval = min(min_eval, eval)
+        return min_eval
+
+def best_move(board):
+        best_eval = float('-inf')
+        best_move = (-1, -1)
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == 0:
+                    board[i][j] = -15
+                    
+                    eval = minimax(board, 0, True)
+                    board[i][j] = 0
+                    if eval > best_eval:
+                        best_eval = eval
+                        best_move = (i, j)
+        return best_move
+
 class ticTacToe():
     def __init__(self):
         self.positions = [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 0), (2, 1), (2, 2)]
@@ -38,8 +83,6 @@ class ticTacToe():
                         [0,0,0],
                         [0,0,0]]
         
-
-        # return state_for_robots.flatten()
         return np.array(self.state).flatten()
 
     def step1(self, action):   
@@ -62,10 +105,6 @@ class ticTacToe():
             done = True
             reward = 1
         
-
-
-        
-        # return state_for_robots.flatten(), reward, done
         return np.array(self.state).flatten(), reward, done
     
     def step2(self, action):   
@@ -88,10 +127,18 @@ class ticTacToe():
         if check_winner(self.state,-1):
             done = True
             reward = 1
-        
-        # return state_for_robots.flatten(), reward, done
+
         return np.array(self.state).flatten(), reward, done
 
+    def evaluate_minimax_move(self, state, maximizing_player):
+        if maximizing_player:
+            move = best_move(state)
+            move = self.positions.index(move)
+            return move
+        else:
+            move = best_move(state)
+            move = self.positions.index(move)
+            return move
 
     def render(self):
         for i in range(len(self.state)):
@@ -211,7 +258,7 @@ def train(net1, optimizer1, net2, optimizer2, episodes, hidden_size1, hidden_siz
 
 
             else:
-                action = select_action(net2, state)
+                action = env.evaluate_minimax_move(state.reshape(3,3), True)
                 next_state, reward, done = env.step2(action)
                 if done:
                     if reward > 0:
@@ -234,7 +281,7 @@ def train(net1, optimizer1, net2, optimizer2, episodes, hidden_size1, hidden_siz
             
             if done:
                 break
-        if episode%100==0:
+        if episode%1==0:
             print(f'Эпизод обучения номер {episode}, количество ничьих {num_of_draws}')
             print(f'Нейросеть, которая ходит первой. Количество побед: {num_of_wins1}, количество ошибок: {num_of_errors1}')
             print(f'Нейросеть, которая ходит второй. Количество побед: {num_of_wins2}, количество ошибок: {num_of_errors2}')
@@ -242,8 +289,8 @@ def train(net1, optimizer1, net2, optimizer2, episodes, hidden_size1, hidden_siz
             print(np.array(state).reshape(3, 3))
 
         if episode%300000 == 0:
-            torch.save(net1, f'nets/tictactoe_net1_{hidden_size1}_{hidden_size2}_{hidden_size3}_{learning_rate}_{episode}.pth')
-            torch.save(net2, f'nets/tictactoe_net2_{hidden_size1}_{hidden_size2}_{hidden_size3}_{learning_rate}_{episode}.pth')
+            torch.save(net1, name_saving_path1)
+            torch.save(net2, name_saving_path2)
         optimize(net1, optimizer1, episode_states_net1, episode_actions_net1, episode_rewards_net1)
 
         optimize(net2, optimizer2, episode_states_net2, episode_actions_net2, episode_rewards_net2)
@@ -264,7 +311,7 @@ def test1(net, num_episodes=10):
                     elif reward > 0:
                         print('Ты выиграл')
                 else:
-                    action = select_action(net, state)
+                    action = env.evaluate_minimax_move(state.reshape(3,3), False)
                     next_state, reward, done = env.step2(action)
                     if reward < 0:
                         print('Робот ошибся')
@@ -321,10 +368,4 @@ env = ticTacToe()
 
 
 
-
-net1 = torch.load('nets/old/3tictactoe_net2_64_0_0_1e-09_1200000.pth')
-net2 = torch.load('nets/old/3tictactoe_net2_64_0_0_1e-09_1200000.pth')
-
-
-
-test2(net1)
+test1('net1')
